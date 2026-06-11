@@ -1,0 +1,1694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gagandeep Singh // Cyber Security Analyst (VAPT)</title>
+    <meta name="description" content="Cyber Security Analyst with 2+ years experience in VAPT, security audits, and offensive security assessments.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        :root {
+            --bg: #050508;
+            --bg2: #0a0a14;
+            --bg3: #111122;
+            --green: #00ff41;
+            --green-dim: #00cc33;
+            --cyan: #00ffff;
+            --red: #ff0033;
+            --purple: #a855f7;
+            --yellow: #ffcc00;
+            --text: #e0e0e0;
+            --text-dim: #667;
+            --border: #1a1a30;
+            --accent: #00ff41;
+            --accent2: #00ffff;
+        }
+        body.recruiter-mode {
+            --bg: #f8f9fa;
+            --bg2: #ffffff;
+            --bg3: #e9ecef;
+            --green: #0d6efd;
+            --green-dim: #0b5ed7;
+            --cyan: #0dcaf0;
+            --red: #dc3545;
+            --purple: #6f42c1;
+            --yellow: #ffc107;
+            --text: #212529;
+            --text-dim: #6c757d;
+            --border: #dee2e6;
+            --accent: #0d6efd;
+            --accent2: #0dcaf0;
+        }
+        body.recruiter-mode #matrix-bg { opacity: 0.02 !important; }
+        body.recruiter-mode .scanlines { display: none; }
+        body.recruiter-mode .glitch::before,
+        body.recruiter-mode .glitch::after { display: none; }
+        
+        body.recruiter-mode .terminal-window { border-color: var(--border); }
+        body.recruiter-mode .recon-dashboard { background: var(--bg2); }
+        body.recruiter-mode .hero-pic-wrap img { border-color: var(--accent); box-shadow: 0 0 40px rgba(13,110,253,0.15); }
+        body.recruiter-mode .nav-links a:hover,
+        body.recruiter-mode .nav-links a.active { color: var(--accent); }
+        body.recruiter-mode .nav-links a::after { background: var(--accent); }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        ::selection { background: var(--green); color: #000; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--green); border-radius: 2px; }
+        #cursor-glow {
+            position: fixed; pointer-events: none; z-index: 99998;
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            background: var(--green);
+            box-shadow: 0 0 20px var(--green), 0 0 60px var(--green);
+            mix-blend-mode: difference;
+            transform: translate(-50%, -50%);
+            transition: opacity 0.3s;
+            opacity: 0;
+        }
+
+        /* ===== BOOT SCREEN ===== */
+        #boot-screen {
+            position: fixed; inset: 0; z-index: 99999;
+            background: #000;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Fira Code', monospace;
+            color: var(--green);
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+        #boot-screen .boot-content {
+            max-width: 700px; width: 90%;
+            padding: 40px;
+        }
+        #boot-screen .boot-line {
+            opacity: 0;
+            animation: bootFadeIn 0.05s forwards;
+            line-height: 1.8;
+        }
+        .boot-line.success { color: var(--green); }
+        .boot-line.warn { color: var(--yellow); }
+        .boot-line.error { color: var(--red); }
+        .boot-line.info { color: var(--cyan); }
+        .boot-line.dim { color: var(--text-dim); }
+        @keyframes bootFadeIn { to { opacity: 1; } }
+        #boot-screen .boot-blink {
+            animation: blink 0.8s infinite;
+        }
+        @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+        .boot-prompt { color: var(--green); }
+        .boot-cursor { animation: blink 0.8s infinite; }
+
+        /* ===== INTERACTIVE TERMINAL PANEL ===== */
+        #term-panel {
+            position: fixed;
+            right: 20px; bottom: 150px;
+            width: 380px;
+            max-height: 320px;
+            background: rgba(0,0,0,0.95);
+            border: 1px solid var(--green-dim);
+            border-radius: 8px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.7rem;
+            z-index: 150;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            display: none;
+            overflow: hidden;
+        }
+        #term-panel.open { display: flex; flex-direction: column; }
+        #term-panel .term-head {
+            padding: 8px 14px;
+            background: #0a0a0a;
+            border-bottom: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        #term-panel .term-head .term-title { color: var(--text-dim); font-size: 0.6rem; }
+        #term-panel .term-head .term-close {
+            color: var(--text-dim); cursor: pointer; background: none; border: none;
+            font-size: 0.8rem; transition: 0.3s;
+        }
+        #term-panel .term-head .term-close:hover { color: var(--red); }
+        #term-panel .term-output {
+            flex: 1; overflow-y: auto; padding: 10px 14px;
+            line-height: 1.7;
+            max-height: 220px;
+        }
+        #term-panel .term-output::-webkit-scrollbar { width: 3px; }
+        #term-panel .term-output::-webkit-scrollbar-thumb { background: var(--green-dim); }
+        #term-panel .term-input-line {
+            display: flex; align-items: center;
+            padding: 6px 14px 10px;
+            border-top: 1px solid var(--border);
+            gap: 6px;
+        }
+        #term-panel .term-input-line .prompt { color: var(--green); flex-shrink: 0; }
+        #term-panel .term-input-line input {
+            flex: 1; background: none; border: none; outline: none;
+            color: var(--text); font-family: 'Fira Code', monospace;
+            font-size: 0.7rem;
+        }
+        .term-output .line { word-break: break-word; }
+        .term-output .line.green { color: var(--green); }
+        .term-output .line.cyan { color: var(--cyan); }
+        .term-output .line.dim { color: var(--text-dim); }
+        .term-output .line.red { color: var(--red); }
+        .term-output .line.yellow { color: var(--yellow); }
+        #term-toggle-btn {
+            position: fixed;
+            right: 20px; bottom: 56px;
+            z-index: 200;
+            padding: 8px 16px;
+            background: var(--bg2);
+            border: 1px solid var(--green-dim);
+            border-radius: 20px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.65rem;
+            color: var(--green);
+            cursor: pointer;
+            transition: 0.3s;
+            backdrop-filter: blur(8px);
+        }
+        #term-toggle-btn:hover { box-shadow: 0 0 20px rgba(0,255,65,0.2); }
+        body.recruiter-mode #term-panel { border-color: var(--border); }
+        body.recruiter-mode #term-panel .term-input-line .prompt { color: var(--accent); }
+        body.recruiter-mode .term-output .line.green { color: var(--accent); }
+
+        /* ===== HACKISH GRID OVERLAY ===== */
+        #hack-grid {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: 0; pointer-events: none;
+            background-image:
+                linear-gradient(rgba(0,255,65,0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,255,65,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridPulse 3s ease-in-out infinite;
+        }
+        @keyframes gridPulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+        #hack-grid::after {
+            content: '';
+            position: fixed; top: 0; left: 0; width: 100vw; height: 3px;
+            background: linear-gradient(90deg, transparent, rgba(0,255,65,0.4), transparent);
+            animation: scanLine 5s linear infinite;
+            pointer-events: none;
+        }
+        @keyframes scanLine {
+            0% { top: 0; }
+            100% { top: 100vh; }
+        }
+
+        /* ===== NETWORK TOPOLOGY CANVAS ===== */
+        #network-bg {
+            position: fixed; top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            z-index: 0;
+            opacity: 0.08;
+            pointer-events: none;
+        }
+        #city-bg {
+            position: fixed; bottom: 0; left: 0;
+            width: 100vw; height: 40vh;
+            z-index: 0;
+            opacity: 0.10;
+            pointer-events: none;
+        }
+        body.recruiter-mode #city-bg { opacity: 0.02; }
+
+        /* ===== NAV ===== */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0;
+            z-index: 100;
+            background: rgba(5,5,8,0.92);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+            padding: 10px 0;
+        }
+        nav .container {
+            max-width: 1100px; margin: 0 auto; padding: 0 24px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .nav-logo {
+            font-family: 'Fira Code', monospace;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--green);
+            text-decoration: none;
+        }
+        .nav-logo span { color: var(--text-dim); }
+        .nav-links { display: flex; gap: 20px; list-style: none; }
+        .nav-links a {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            text-decoration: none;
+            transition: 0.3s;
+            letter-spacing: 0.5px;
+        }
+        .nav-links a:hover, .nav-links a.active { color: var(--green); }
+        .menu-toggle { display: none; background: none; border: none; color: var(--green); font-size: 1.3rem; }
+
+        /* ===== MATRIX BG ===== */
+        #matrix-bg {
+            position: fixed; top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            z-index: 0;
+            opacity: 0.30;
+            pointer-events: none;
+        }
+        .scanlines {
+            position: fixed; inset: 0;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,65,0.02) 2px, rgba(0,255,65,0.02) 4px);
+            pointer-events: none; z-index: 1;
+        }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 2; }
+        section { padding: 100px 0; position: relative; }
+
+        /* ===== HERO ===== */
+        .hero {
+            min-height: 100vh;
+            display: flex; align-items: center;
+            padding-top: 100px;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-content { position: relative; max-width: 100%; }
+        .hero-top {
+            display: flex;
+            align-items: center;
+            gap: 70px;
+            margin-bottom: 40px;
+        }
+        .hero-pic-wrap {
+            position: relative;
+            flex-shrink: 0;
+        }
+        .hero-pic-wrap img {
+            width: 300px; height: 300px;
+            object-fit: cover;
+            border-radius: 20px;
+            border: 2px solid var(--green);
+            box-shadow: 0 0 60px rgba(0,255,65,0.15);
+            transition: 0.3s;
+        }
+        .hero-pic-wrap:hover img {
+            box-shadow: 0 0 80px rgba(0,255,65,0.3);
+        }
+        .hero-pic-wrap .pic-border {
+            position: absolute;
+            inset: -6px;
+            border-radius: 24px;
+            border: 1px solid rgba(0,255,65,0.15);
+            animation: borderPulse 3s ease-in-out infinite;
+        }
+        @keyframes borderPulse {
+            0%,100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+        }
+        .hero-pic-wrap .pic-scan {
+            position: absolute; inset: 0;
+            border-radius: 20px;
+            background: repeating-linear-gradient(0deg, transparent 0px, transparent 4px, rgba(0,255,65,0.04) 4px, rgba(0,255,65,0.04) 8px);
+            animation: scanDown 3s linear infinite;
+            pointer-events: none;
+        }
+        @keyframes scanDown {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 60px; }
+        }
+        .hero-text { flex: 1; }
+        .hero-badge {
+            display: inline-block;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.7rem;
+            color: var(--green);
+            border: 1px solid var(--green);
+            padding: 5px 12px;
+            border-radius: 3px;
+            margin-bottom: 18px;
+            opacity: 0.7;
+        }
+        .hero-badge i { color: var(--red); margin-right: 6px; }
+        .hero h1 {
+            font-size: clamp(2.8rem, 6vw, 4.8rem);
+            font-weight: 900;
+            line-height: 1.0;
+            margin-bottom: 6px;
+        }
+        .glitch {
+            position: relative;
+            display: inline-block;
+        }
+        .glitch::before, .glitch::after {
+            content: attr(data-text);
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+        }
+        .glitch::before {
+            color: var(--cyan);
+            z-index: -1;
+            animation: glitch1 0.3s infinite linear alternate-reverse;
+        }
+        .glitch::after {
+            color: var(--red);
+            z-index: -2;
+            animation: glitch2 0.2s infinite linear alternate-reverse;
+        }
+        @keyframes glitch1 {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+        @keyframes glitch2 {
+            0% { transform: translate(0); }
+            25% { transform: translate(1px, -1px); }
+            50% { transform: translate(-1px, 2px); }
+            75% { transform: translate(2px, 1px); }
+            100% { transform: translate(-2px, 0); }
+        }
+        .hero-title-line {
+            font-family: 'Fira Code', monospace;
+            font-size: clamp(1rem, 2vw, 1.4rem);
+            color: var(--text-dim);
+            min-height: 2em;
+            margin-bottom: 20px;
+        }
+        .title-cursor { animation: blink 0.8s infinite; }
+        .hero-tags {
+            display: flex; flex-wrap: wrap; gap: 8px;
+            margin-bottom: 28px;
+        }
+        .hero-tags span {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.7rem;
+            padding: 5px 12px;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            color: var(--text-dim);
+        }
+        .hero-tags span i { color: var(--green); margin-right: 5px; font-size: 0.5rem; }
+        .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 11px 26px;
+            border-radius: 5px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: 0.3s;
+            border: none;
+        }
+        .btn-primary { background: var(--green); color: #000; }
+        .btn-primary:hover { box-shadow: 0 0 40px rgba(0,255,65,0.3); transform: translateY(-2px); }
+        .btn-outline { border: 1px solid var(--border); color: var(--text); }
+        .btn-outline:hover { border-color: var(--green); color: var(--green); transform: translateY(-2px); }
+        .btn-ghost { color: var(--text-dim); font-size: 0.75rem; }
+        .btn-ghost:hover { color: var(--green); }
+
+        /* ===== RECON DASHBOARD (Stats) ===== */
+        .recon-dashboard {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin-top: 40px;
+            padding: 20px;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+        }
+        .recon-stat {
+            text-align: center;
+            padding: 12px 8px;
+        }
+        .recon-stat .stat-num {
+            font-family: 'Fira Code', monospace;
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--green);
+            line-height: 1;
+        }
+        .recon-stat .stat-num .blink-dot { color: var(--green); animation: blink 1s infinite; }
+        .recon-stat .stat-label {
+            font-size: 0.65rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 4px;
+        }
+        .recon-stat .stat-tag {
+            font-size: 0.6rem;
+            color: var(--cyan);
+            font-family: 'Fira Code', monospace;
+        }
+
+        /* ===== SECTION DEFAULTS ===== */
+        .section-label {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.75rem;
+            color: var(--green);
+            margin-bottom: 6px;
+            letter-spacing: 2px;
+        }
+        .section-label i { margin-right: 6px; }
+        .section-title {
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            font-weight: 800;
+            margin-bottom: 40px;
+        }
+        .reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.8s ease, transform 0.8s ease; }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+
+        /* ===== OPERATOR PROFILE ===== */
+        .operator-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.3fr;
+            gap: 50px;
+            align-items: start;
+        }
+        .operator-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .operator-stat-card {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 18px;
+            transition: 0.3s;
+        }
+        .operator-stat-card:hover {
+            border-color: var(--green-dim);
+            transform: translateY(-3px);
+        }
+        .operator-stat-card .op-icon {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+        }
+        .operator-stat-card .op-val {
+            font-family: 'Fira Code', monospace;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--green);
+        }
+        .operator-stat-card .op-label {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .operator-bio p {
+            color: var(--text-dim);
+            margin-bottom: 14px;
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+        .operator-bio strong { color: var(--text); }
+
+        /* ===== CERTIFICATES ===== */
+        .cert-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-top: 48px;
+        }
+        .cert-card {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .cert-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--green), transparent);
+            opacity: 0;
+            transition: 0.3s;
+        }
+        .cert-card:hover::before { opacity: 1; }
+        .cert-card:hover {
+            border-color: var(--green-dim);
+            transform: translateY(-6px);
+            box-shadow: 0 12px 40px rgba(0,255,65,0.08);
+        }
+        .cert-card img {
+            width: 100%;
+            max-height: 230px;
+            object-fit: contain;
+            border-radius: 8px;
+            background: #fff;
+            padding: 10px;
+        }
+        .cert-card .cert-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 0 4px;
+        }
+        .cert-card .cert-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .cert-card .cert-org {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+        }
+        .cert-card .cert-token {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.6rem;
+            color: var(--cyan);
+            padding: 3px 10px;
+            border: 1px solid rgba(0,255,255,0.2);
+            border-radius: 3px;
+        }
+
+        /* ===== SKILLS ===== */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 18px;
+            margin-top: 40px;
+        }
+        .skill-card {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 24px;
+            transition: 0.3s;
+        }
+        .skill-card:hover { border-color: var(--green-dim); transform: translateY(-4px); }
+        .skill-card h3 {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            color: var(--green);
+            margin-bottom: 14px;
+        }
+        .skill-card h3 i { margin-right: 8px; }
+        .skill-card .tags { display: flex; flex-wrap: wrap; gap: 7px; }
+        .skill-card .tags span {
+            font-size: 0.75rem;
+            padding: 4px 11px;
+            background: var(--bg3);
+            border-radius: 3px;
+            color: var(--text-dim);
+        }
+
+        /* ===== EXPERIENCE ===== */
+        .exp-timeline { position: relative; margin-top: 40px; }
+        .exp-timeline::before {
+            content: ''; position: absolute;
+            left: 18px; top: 0; bottom: 0;
+            width: 1px; background: var(--border);
+        }
+        .exp-item {
+            position: relative;
+            padding-left: 52px;
+            padding-bottom: 36px;
+        }
+        .exp-item:last-child { padding-bottom: 0; }
+        .exp-dot {
+            position: absolute; left: 11px; top: 6px;
+            width: 14px; height: 14px;
+            border-radius: 50%;
+            background: var(--bg); border: 2px solid var(--green);
+        }
+        .exp-item.current .exp-dot {
+            background: var(--green);
+            box-shadow: 0 0 16px rgba(0,255,65,0.5);
+        }
+        .exp-header {
+            display: flex; flex-wrap: wrap;
+            justify-content: space-between; align-items: baseline;
+            margin-bottom: 4px;
+        }
+        .exp-header h3 { font-size: 1rem; font-weight: 600; }
+        .exp-header .exp-date { color: var(--text-dim); font-size: 0.75rem; font-family: 'Fira Code', monospace; }
+        .exp-company { color: var(--text-dim); font-size: 0.8rem; margin-bottom: 8px; }
+        .exp-desc { color: var(--text-dim); font-size: 0.85rem; line-height: 1.7; }
+        .exp-desc p { margin-bottom: 6px; }
+        .exp-desc ul { list-style: none; }
+        .exp-desc ul li { padding: 2px 0; }
+        .exp-desc ul li::before { content: '▸ '; color: var(--green); }
+
+        /* ===== CVE INTELLIGENCE ===== */
+
+        /* ===== AWARDS ===== */
+        .awards-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-top: 40px;
+        }
+        .award-card {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 24px 16px;
+            text-align: center;
+            transition: 0.3s;
+        }
+        .award-card:hover { border-color: var(--green-dim); transform: translateY(-4px); }
+        .award-card i { font-size: 1.8rem; margin-bottom: 10px; }
+        .award-card .fa-nasa { color: #0b3d91; }
+        .award-card .fa-trophy { color: #fbbf24; }
+        .award-card .fa-flag-checkered { color: var(--green); }
+        .award-card .fa-gamepad { color: var(--cyan); }
+        .award-card h4 { font-size: 0.8rem; font-weight: 600; }
+        .award-card p { font-size: 0.7rem; color: var(--text-dim); }
+
+        /* ===== TERMINAL NAV (Contact) ===== */
+        .contact-split {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 48px;
+            margin-top: 40px;
+        }
+        .terminal-window {
+            background: #000;
+            border: 1px solid var(--green-dim);
+            border-radius: 8px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.75rem;
+            overflow: hidden;
+        }
+        .term-header {
+            background: #0a0a0a;
+            padding: 8px 14px;
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; gap: 8px;
+        }
+        .term-dot { width: 9px; height: 9px; border-radius: 50%; }
+        .term-dot.r { background: #ff5f56; }
+        .term-dot.y { background: #ffbd2e; }
+        .term-dot.g { background: #27c93f; }
+        .term-title { color: var(--text-dim); font-size: 0.65rem; margin-left: 8px; }
+        .term-body {
+            padding: 18px;
+            line-height: 2;
+            min-height: 200px;
+        }
+        .term-body .prompt { color: var(--green); }
+        .term-body .cmd { color: var(--text); }
+        .term-body .out { color: var(--text-dim); }
+        .term-body .out.ok { color: var(--green); }
+        .term-body .tw-line .tw-cursor { animation: blink 0.8s infinite; }
+
+        .contact-links h3 {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            color: var(--green);
+            margin-bottom: 16px;
+        }
+        .contact-links a {
+            display: flex; align-items: center; gap: 14px;
+            padding: 10px 0;
+            color: var(--text-dim);
+            text-decoration: none;
+            transition: 0.3s;
+            font-size: 0.85rem;
+        }
+        .contact-links a:hover { color: var(--green); }
+        .contact-links a i { width: 18px; font-size: 1rem; }
+
+        /* ===== ELITE FOOTER ===== */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 40px 0;
+            text-align: center;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.7rem;
+        }
+        footer .glitch-line {
+            color: var(--green);
+            font-size: 0.8rem;
+            margin-bottom: 8px;
+        }
+        footer .glitch-line .blink { animation: blink 1s infinite; }
+        footer .footer-links {
+            display: flex; justify-content: center; gap: 24px;
+            margin: 12px 0;
+            font-size: 0.75rem;
+        }
+        footer .footer-links a { color: var(--text-dim); text-decoration: none; transition: 0.3s; }
+        footer .footer-links a:hover { color: var(--green); }
+        footer .copyright { color: var(--text-dim); font-size: 0.6rem; }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; position: absolute; top: 100%; left: 0; right: 0; background: rgba(5,5,8,0.98); flex-direction: column; padding: 16px 24px; border-bottom: 1px solid var(--border); gap: 14px; }
+            .nav-links.open { display: flex; }
+            .menu-toggle { display: block; }
+            .hero-top { flex-direction: column; align-items: center; gap: 30px; }
+            .hero-pic-wrap img { width: 200px; height: 200px; }
+            .hero-text { text-align: center; }
+            .hero-actions { justify-content: center; }
+            .hero-tags { justify-content: center; }
+            .recon-dashboard { grid-template-columns: 1fr 1fr; gap: 10px; }
+            .operator-grid { grid-template-columns: 1fr; }
+            .cert-grid { grid-template-columns: 1fr; }
+            .awards-grid { grid-template-columns: 1fr 1fr; }
+            .contact-split { grid-template-columns: 1fr; }
+            nav { top: 0; }
+            #term-panel { width: 90vw; right: 5vw; bottom: 160px; }
+            #term-toggle-btn { right: 10px; font-size: 0.55rem; padding: 6px 10px; }
+            #cve > .container > div { grid-template-columns: 1fr !important; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- BOOT SCREEN -->
+<div id="boot-screen"><div class="boot-content" id="boot-text"></div></div>
+
+
+
+<!-- HACKISH GRID -->
+<div id="hack-grid"></div>
+
+<!-- MATRIX BG -->
+<canvas id="matrix-bg"></canvas>
+<div class="scanlines"></div>
+
+<!-- NAV -->
+<nav>
+    <div class="container">
+        <a href="#" class="nav-logo">λ gs<span>.dev</span></a>
+        <button class="menu-toggle" id="menuToggle"><i class="fas fa-terminal"></i></button>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#operator">operator</a></li>
+            <li><a href="#certificates">tokens</a></li>
+            <li><a href="#cve">cve</a></li>
+            <li><a href="#experience">logs</a></li>
+            <li><a href="#contact">connect</a></li>
+        </ul>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="container">
+        <div class="hero-content reveal">
+            <div class="hero-top">
+                <div class="hero-pic-wrap">
+                    <div class="pic-border"></div>
+                    <img src="images/profile%20pic.jpeg" alt="Gagandeep Singh">
+                    <div class="pic-scan"></div>
+                </div>
+                <div class="hero-text">
+                    <div class="hero-badge"><i class="fas fa-shield-halved"></i> CVE-2026-25809 // CERT-IN ALIGNED</div>
+                    <h1><span class="glitch" data-text="Gagandeep Singh">Gagandeep Singh</span></h1>
+                    <div class="hero-title-line"><span id="hero-type"></span><span class="title-cursor">_</span></div>
+                    <div class="hero-tags">
+                        <span><i class="fas fa-circle"></i> VAPT</span>
+                        <span><i class="fas fa-circle"></i> Web &amp; API</span>
+                        <span><i class="fas fa-circle"></i> Network</span>
+                        <span><i class="fas fa-circle"></i> Cloud</span>
+                        <span><i class="fas fa-circle"></i> Mobile</span>
+                        <span><i class="fas fa-circle"></i> CERT-IN</span>
+                    </div>
+                    <div class="hero-actions">
+                        <a href="#contact" class="btn btn-primary"><i class="fas fa-terminal"></i> Connect</a>
+                        <a href="#" class="btn btn-outline" onclick="window.open('https://www.linkedin.com/in/gagandeep-singh-578547285','_blank')"><i class="fab fa-linkedin-in"></i> LinkedIn</a>
+                        <a href="#" class="btn btn-outline" onclick="window.open('https://github.com/Gagan665-h4ck','_blank')"><i class="fab fa-github"></i> GitHub</a>
+                        <a href="#" class="btn btn-outline" onclick="window.open('https://medium.com/@jerryh4ack','_blank')"><i class="fab fa-medium"></i> Medium</a>
+                    </div>
+                </div>
+            </div>
+            <div class="recon-dashboard">
+                <div class="recon-stat"><div class="stat-num"><span class="blink-dot">⬤</span> 2+</div><div class="stat-label">Years Active</div></div>
+                <div class="recon-stat"><div class="stat-num">CVE</div><div class="stat-label">MITRE Assignment</div><div class="stat-tag">CVE-2026-25809</div></div>
+                <div class="recon-stat"><div class="stat-num">9</div><div class="stat-label">Certifications</div><div class="stat-tag">ACTIVE</div></div>
+                <div class="recon-stat"><div class="stat-num">50+</div><div class="stat-label">Assessments</div><div class="stat-tag">COMPLETED</div></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- OPERATOR PROFILE -->
+<section id="operator">
+    <div class="container">
+        <div class="section-label reveal"><i class="fas fa-id-card"></i> whoami // operator_profile</div>
+        <h2 class="section-title reveal">Operator Profile</h2>
+        <div class="operator-grid">
+            <div class="operator-stats reveal">
+                <div class="operator-stat-card"><div class="op-icon">🔴</div><div class="op-val">2+</div><div class="op-label">Years Field Experience</div></div>
+                <div class="operator-stat-card"><div class="op-icon">🛡️</div><div class="op-val">eJPT</div><div class="op-label">Junior Penetration Tester</div></div>
+                <div class="operator-stat-card"><div class="op-icon">☁️</div><div class="op-val">MCRTA</div><div class="op-label">Multi Cloud Red Team Analyst</div></div>
+                <div class="operator-stat-card"><div class="op-icon">🐞</div><div class="op-val">CVE</div><div class="op-label">CVE-2026-25809 Assignee</div></div>
+                <div class="operator-stat-card"><div class="op-icon">🎯</div><div class="op-val">CRTA</div><div class="op-label">Certified Red Team Analyst</div></div>
+                <div class="operator-stat-card"><div class="op-icon">🔐</div><div class="op-val">CASA</div><div class="op-label">Certified API Security Analyst</div></div>
+            </div>
+            <div class="operator-bio reveal">
+                <p><strong>Cyber Security Analyst (VAPT)</strong> with 2+ years of hands-on experience performing vulnerability assessments, penetration testing, and security audits across <strong>Web, API, Mobile, Network, and Cloud</strong> environments.</p>
+                <p>Proven track record identifying critical vulnerabilities, conducting <strong>CERT-In aligned assessments</strong>, and delivering risk-based remediation. Certified in <strong>eJPT, CRTA, CASA, MCRTA, ISC2-CC</strong> with a recognized CVE contribution <strong>(CVE-2026-25809)</strong>.</p>
+                <p>Core arsenal: <strong>Burp Suite, Nmap, Metasploit, Wireshark</strong>, and OWASP testing methodologies. Active CTF competitor with NASA Bug Bounty recognition.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CERTIFICATES -->
+<section id="certificates">
+    <div class="container">
+        <div class="section-label reveal"><i class="fas fa-key"></i> cat /etc/access_tokens</div>
+        <h2 class="section-title reveal">Certification Access Tokens</h2>
+        <div class="cert-grid">
+            <div class="cert-card reveal"><img src="images/eJPT-%20Junior%20Penetration%20Tester.png" alt="eJPT"><div class="cert-label"><div><div class="cert-name">eJPT</div><div class="cert-org">INE — Junior Penetration Tester</div></div><span class="cert-token">[VALID]</span></div></div>
+            <div class="cert-card reveal"><img src="images/CRTA.png" alt="CRTA"><div class="cert-label"><div><div class="cert-name">CRTA</div><div class="cert-org">Certified Red Team Analyst</div></div><span class="cert-token">[ACTIVE]</span></div></div>
+            <div class="cert-card reveal"><img src="images/MCRTA.png" alt="MCRTA"><div class="cert-label"><div><div class="cert-name">MCRTA</div><div class="cert-org">Multi Cloud Red Team Analyst</div></div><span class="cert-token">[MULTI-CLOUD]</span></div></div>
+            <div class="cert-card reveal"><img src="images/CASA.png" alt="CASA"><div class="cert-label"><div><div class="cert-name">CASA</div><div class="cert-org">Certified API Security Analyst</div></div><span class="cert-token">[API]</span></div></div>
+            <div class="cert-card reveal"><img src="images/ACP-%20APISEC%20Certified%20Practioner.png" alt="ACP"><div class="cert-label"><div><div class="cert-name">ACP</div><div class="cert-org">APIsec Certified Practitioner</div></div><span class="cert-token">[SECURED]</span></div></div>
+            <div class="cert-card reveal"><img src="images/CCEP.png" alt="CCEP"><div class="cert-label"><div><div class="cert-name">CCEP</div><div class="cert-org">Certified Cybersecurity Educator</div></div><span class="cert-token">[EDUCATOR]</span></div></div>
+                        <div class="cert-card reveal"><img src="images/CAPen.png" alt="CAPen"><div class="cert-label"><div><div class="cert-name">CAPen</div><div class="cert-org">Certified Advanced Penetration</div></div><span class="cert-token">[ADVANCED]</span></div></div>
+            <div class="cert-card reveal"><img src="images/CRTOM.png" alt="CRTOM"><div class="cert-label"><div><div class="cert-name">CRTOM</div><div class="cert-org">Certified Red Team Ops Master</div></div><span class="cert-token">[MASTER]</span></div></div>
+            <div class="cert-card reveal"><img src="images/ICCA%20-%20INE%20Certified%20Cloud%20Associate.png" alt="ICCA"><div class="cert-label"><div><div class="cert-name">ICCA</div><div class="cert-org">INE Certified Cloud Associate</div></div><span class="cert-token">[CLOUD]</span></div></div>
+        </div>
+    </div>
+</section>
+
+
+
+<!-- SKILLS -->
+<section id="skills">
+    <div class="container">
+        <div class="section-label reveal"><i class="fas fa-tools"></i> arsenal --list</div>
+        <h2 class="section-title reveal">Skills &amp; Arsenal</h2>
+        <div class="skills-grid">
+            <div class="skill-card reveal"><h3><i class="fas fa-code"></i> Languages</h3><div class="tags"><span>Python</span><span>HTML/CSS</span><span>JavaScript</span><span>MySQL</span><span>Bash</span></div></div>
+            <div class="skill-card reveal"><h3><i class="fas fa-skull"></i> Technical</h3><div class="tags"><span>Web PT</span><span>Network PT</span><span>API Testing</span><span>Cloud/AWS PT</span><span>Mobile PT</span><span>Vulnerability Assessment</span></div></div>
+            <div class="skill-card reveal"><h3><i class="fas fa-tools"></i> Tools</h3><div class="tags"><span>Burp Suite</span><span>Nmap</span><span>Metasploit</span><span>Wireshark</span><span>Nikto</span><span>Docker</span><span>Git</span><span>Postman</span><span>PowerBI</span></div></div>
+            <div class="skill-card reveal"><h3><i class="fas fa-microchip"></i> OS</h3><div class="tags"><span>Linux</span><span>Windows</span><span>Kali</span><span>Parrot</span></div></div>
+            <div class="skill-card reveal"><h3><i class="fas fa-clipboard-check"></i> Frameworks</h3><div class="tags"><span>OWASP Top 10</span><span>CVSS 4.0</span><span>NIST</span><span>ISO 27001</span><span>MITRE ATT&CK</span></div></div>
+            <div class="skill-card reveal"><h3><i class="fas fa-users"></i> Soft Skills</h3><div class="tags"><span>Leadership</span><span>Time Management</span><span>Adaptability</span><span>Flexibility</span><span>Team Collaboration</span></div></div>
+        </div>
+    </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+    <div class="container">
+        <div class="section-label reveal"><i class="fas fa-history"></i> tail -f /var/log/career.log</div>
+        <h2 class="section-title reveal">Operation Logs</h2>
+        <div class="exp-timeline">
+            <div class="exp-item current reveal"><div class="exp-dot"></div><div class="exp-header"><h3>Cyber Security Analyst (VAPT)</h3><span class="exp-date">Jan 2025 — Present</span></div><div class="exp-company">GISPL · New Delhi</div><div class="exp-desc"><p>Performing VAPT across Web Apps, APIs, Mobile, Networks, and Cloud. Identifying critical vulnerabilities, conducting CERT-In audits, delivering remediation roadmaps, and source code reviews.</p><ul><li>Lead penetration testing engagements for enterprise clients</li><li>CERT-In aligned security assessments and compliance reporting</li><li>Vulnerability validation and risk-based remediation guidance</li></ul></div></div>
+            <div class="exp-item current reveal"><div class="exp-dot"></div><div class="exp-header"><h3>Cyber Security Analyst</h3><span class="exp-date">Jun 2025 — Present</span></div><div class="exp-company">PhishSniper · Full-time · New Delhi</div><div class="exp-desc"><p>Conducting offensive security assessments, phishing simulations, and security architecture reviews to identify and remediate vulnerabilities across client environments.</p></div></div>
+            <div class="exp-item reveal"><div class="exp-dot"></div><div class="exp-header"><h3>Python Web Developer Trainee</h3><span class="exp-date">Aug 2024 — Sep 2024</span></div><div class="exp-company">Infosys, ICT · 1 Month</div><div class="exp-desc"><p>Built a Python Django web application with dynamic content handling, user authentication, and database integration.</p></div></div>
+            <div class="exp-item reveal"><div class="exp-dot"></div><div class="exp-header"><h3>Cloud Computing Trainee</h3><span class="exp-date">Feb 2024 — Jul 2024</span></div><div class="exp-company">Sasaran Technologies · 6 Months</div><div class="exp-desc"><p>AWS and Python cloud development. Supported automation, cloud migration, and application development initiatives.</p></div></div>
+        </div>
+    </div>
+</section>
+
+<!-- CVE INTELLIGENCE -->
+<section id="cve">
+    <div class="container">
+        <div class="section-label reveal"><i class="fas fa-shield-virus"></i> cve_intel — CVE-2026-25809</div>
+        <h2 class="section-title reveal">CVE Intelligence</h2>
+        <div class="reveal" style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:30px;margin-top:40px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+                <span style="font-family:'Fira Code',monospace;font-size:1.5rem;font-weight:800;color:var(--red);">CVE-2026-25809</span>
+                <span style="font-family:'Fira Code',monospace;font-size:0.7rem;padding:4px 12px;background:var(--red);color:#fff;border-radius:3px;">CVSS 9.1 CRITICAL</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- EDUCATION + AWARDS -->
+<section id="education">
+    <div class="container">
+        <div class="section-label reveal"><i class="fas fa-graduation-cap"></i> cat /etc/education</div>
+        <h2 class="section-title reveal">Education &amp; Recognition</h2>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:40px;" class="reveal">
+            <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px;display:flex;gap:14px;transition:0.3s;" class="reveal"><i class="fas fa-graduation-cap" style="font-size:1.5rem;color:var(--green);"></i><div><h3 style="font-size:0.95rem;font-weight:600;">B.Tech in Computer Science Engineering</h3><div style="color:var(--text-dim);font-size:0.8rem;">Guru Tegh Bahadur Institute of Technology</div><div style="color:var(--text-dim);font-size:0.75rem;font-family:'Fira Code',monospace;">2022 — 2025</div></div></div>
+            <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px;display:flex;gap:14px;transition:0.3s;" class="reveal"><i class="fas fa-graduation-cap" style="font-size:1.5rem;color:var(--green);"></i><div><h3 style="font-size:0.95rem;font-weight:600;">Diploma in Computer Science Engineering</h3><div style="color:var(--text-dim);font-size:0.8rem;">Board of Technical Education</div><div style="color:var(--text-dim);font-size:0.75rem;font-family:'Fira Code',monospace;">2019 — 2022</div></div></div>
+        </div>
+        <div class="awards-grid">
+            <div class="award-card reveal"><svg viewBox="0 0 100 100" style="width:32px;height:32px;flex-shrink:0"><circle cx="50" cy="50" r="45" fill="none" stroke="var(--accent)" stroke-width="2"/><text x="50" y="52" text-anchor="middle" dominant-baseline="central" font-family="Arial Black,Impact,sans-serif" font-size="11" font-weight="900" fill="var(--accent)">NASA</text><text x="50" y="67" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="5" fill="var(--accent)" letter-spacing="2">⏎</text></svg><h4>NASA Bug Bounty</h4><p>Recognition Letter</p></div>
+            <div class="award-card reveal"><i class="fas fa-trophy"></i><h4>CTF Challenge Coin</h4><p>Bugcrowd CTF</p></div>
+            <div class="award-card reveal"><i class="fas fa-flag-checkered"></i><h4>Craccon CTF 3rd</h4><p>3rd Place Finish</p></div>
+            <div class="award-card reveal"><i class="fas fa-gamepad"></i><h4>US Cyber Games</h4><p>Competitive CTF Player</p></div>
+        </div>
+    </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+    <div class="container">
+        <div class="section-label reveal"><i class="fas fa-plug"></i> netcat -lvp 443</div>
+        <h2 class="section-title reveal">Establish Connection</h2>
+        <div class="contact-split">
+            <div class="terminal-window reveal">
+                <div class="term-header"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">connect.sh</span></div>
+                <div class="term-body" id="term-body">
+                    <div><span class="prompt">λ </span><span class="cmd">whoami</span></div>
+                    <div class="out">Gagandeep Singh</div>
+                    <div><span class="prompt">λ </span><span class="cmd">cat /etc/location</span></div>
+                    <div class="out">New Delhi, India</div>
+                    <div><span class="prompt">λ </span><span class="cmd">./establish-link.sh</span></div>
+                    <div class="tw-line"><span class="out" id="tw-output"></span><span class="tw-cursor">_</span></div>
+                </div>
+            </div>
+            <div class="contact-links reveal">
+                <h3><i class="fas fa-link"></i> direct_connect</h3>
+                <a href="mailto:gdeepsingh665@gmail.com"><i class="fas fa-envelope" style="color:var(--red);"></i> gdeepsingh665@gmail.com</a>
+                <a href="#"><i class="fas fa-map-marker-alt" style="color:var(--cyan);"></i> New Delhi, India</a>
+                <a href="#" onclick="window.open('https://www.linkedin.com/in/gagandeep-singh-578547285','_blank')"><i class="fab fa-linkedin-in" style="color:#0a66c2;"></i> linkedin.com/in/gagandeep-singh-578547285</a>
+                <a href="#" onclick="window.open('https://github.com/Gagan665-h4ck','_blank')"><i class="fab fa-github"></i> github.com/Gagan665-h4ck</a>
+                <a href="#" onclick="window.open('https://medium.com/@jerryh4ack','_blank')"><i class="fab fa-medium" style="color:#fff;"></i> medium.com/@jerryh4ack</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ELITE FOOTER -->
+<footer>
+    <div class="container">
+        <div class="glitch-line">[ root@gs.dev ] — <span class="blink">⬤</span> SYSTEM SECURE — [ <span id="footer-time"></span> UTC ]</div>
+        <div class="footer-links">
+            <a href="#" onclick="window.open('https://www.linkedin.com/in/gagandeep-singh-578547285','_blank')">linkedin</a>
+            <span style="color:var(--border);">|</span>
+            <a href="#" onclick="window.open('https://github.com/Gagan665-h4ck','_blank')">github</a>
+            <span style="color:var(--border);">|</span>
+            <a href="#" onclick="window.open('https://medium.com/@jerryh4ack','_blank')">medium</a>
+            <span style="color:var(--border);">|</span>
+            <a href="mailto:gdeepsingh665@gmail.com">email</a>
+            <span style="color:var(--border);">|</span>
+            <span style="color:var(--text-dim);">PGP: 3A4B 5C6D</span>
+        </div>
+        <div class="copyright">λ 2026 — Gagandeep Singh // Licensed under MIT — Permission is hereby granted, free of charge... <span style="color:var(--green);">:: EOF ::</span></div>
+    </div>
+</footer>
+
+<!-- CURSOR GLOW -->
+<div id="cursor-glow"></div>
+
+<!-- NETWORK TOPOLOGY BG -->
+<canvas id="network-bg"></canvas>
+
+<!-- CYBERPUNK CITY BG -->
+<canvas id="city-bg"></canvas>
+
+
+
+<!-- TERMINAL TOGGLE -->
+<button id="term-toggle-btn" onclick="toggleTerminal()">[/] open shell</button>
+
+<!-- INTERACTIVE TERMINAL -->
+<div id="term-panel">
+    <div class="term-head">
+        <span class="term-title">interactive_shell — root@gs.dev</span>
+        <button class="term-close" id="term-close" onclick="closeTerminal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="term-output" id="term-output">
+        <div class="line dim">Type 'help' for available commands</div>
+    </div>
+    <div class="term-input-line">
+        <span class="prompt">root@gs.dev:~$</span>
+        <input type="text" id="term-input" autocomplete="off" spellcheck="false" placeholder="" onkeydown="return termHandleKey(event)">
+    </div>
+</div>
+
+<script>
+    // ===== BOOT SEQUENCE =====
+    const bootLines = [
+        { text: '[BOOT] initiating kernel...', cls: 'dim' },
+        { text: '[BOOT] loading security modules...', cls: 'dim' },
+        { text: '[OK]   CPU: Intel Core i7-13700H @ 2.40GHz', cls: 'success' },
+        { text: '[OK]   MEM: 32768MB available', cls: 'success' },
+        { text: '[OK]   GPU: NVIDIA RTX 4060', cls: 'success' },
+        { text: '[OK]   NET: eth0 — 192.168.1.42/24', cls: 'success' },
+        { text: '', cls: 'dim' },
+        { text: '[INIT] loading operator profile...', cls: 'info' },
+        { text: '[OK]   gs.dev — Gagandeep Singh', cls: 'success' },
+        { text: '[OK]   Role: Cyber Security Analyst (VAPT)', cls: 'success' },
+        { text: '[OK]   Certs: eJPT · CRTA · MCRTA · CASA · ACP · ISC2-CC · CAPen', cls: 'success' },
+        { text: '[OK]   CVE Assignment: CVE-2026-25809', cls: 'success' },
+        { text: '', cls: 'dim' },
+        { text: '[INIT] establishing secure connection...', cls: 'info' },
+        { text: '[OK]   TLS 1.3 — ECDHE-RSA-AES256-GCM-SHA384', cls: 'success' },
+        { text: '[OK]   HSTS — Strict-Transport-Security: max-age=31536000', cls: 'success' },
+        { text: '', cls: 'dim' },
+        { text: '[SEC]  WARNING: Authorized personnel only', cls: 'warn' },
+        { text: '[SEC]  All activities are monitored and logged', cls: 'warn' },
+        { text: '', cls: 'dim' },
+        { text: '[BOOT] System ready. Press any key or click to continue...', cls: 'success' },
+        { text: '', cls: 'dim' },
+        { text: 'root@gs.dev:~$ ', cls: 'prompt', isPrompt: true }
+    ];
+
+    const bootEl = document.getElementById('boot-text');
+    let bootIdx = 0, bootChar = 0, bootDone = false;
+
+    function bootType() {
+        if (bootDone) return;
+        if (bootIdx >= bootLines.length) { bootDone = true; return; }
+        const line = bootLines[bootIdx];
+        if (line.text === '' && !line.isPrompt) {
+            bootEl.innerHTML += '<br>';
+            bootIdx++;
+            setTimeout(bootType, 30);
+            return;
+        }
+        if (!line.isPrompt) {
+            if (bootChar === 0) {
+                const div = document.createElement('div');
+                div.className = 'boot-line ' + line.cls;
+                div.id = 'bl' + bootIdx;
+                bootEl.appendChild(div);
+            }
+            const div = document.getElementById('bl' + bootIdx);
+            if (div && bootChar < line.text.length) {
+                div.textContent = line.text.substring(0, bootChar + 1);
+                bootChar++;
+                setTimeout(bootType, 8 + Math.random() * 20);
+            } else {
+                bootIdx++;
+                bootChar = 0;
+                setTimeout(bootType, 20);
+            }
+        } else {
+            const div = document.createElement('div');
+            div.className = 'boot-line';
+            div.innerHTML = '<span class="boot-prompt">' + line.text + '</span><span class="boot-cursor">_</span>';
+            div.id = 'prompt-line';
+            bootEl.appendChild(div);
+            bootDone = true;
+        }
+    }
+    bootType();
+
+    document.getElementById('boot-screen').addEventListener('click', () => {
+        document.getElementById('boot-screen').style.opacity = '0';
+        document.getElementById('boot-screen').style.transition = 'opacity 0.5s';
+        setTimeout(() => {
+            document.getElementById('boot-screen').style.display = 'none';
+        }, 500);
+    });
+
+    // ===== MATRIX RAIN =====
+    const matCanvas = document.getElementById('matrix-bg');
+    let matCtx = null, mw, mh, mCols, mDrops;
+    function mResize() {
+        if (!matCanvas) return;
+        mw = matCanvas.width = window.innerWidth;
+        mh = matCanvas.height = window.innerHeight;
+        mCols = Math.floor(mw / 12);
+        mDrops = Array(mCols).fill(1);
+    }
+    function mDraw() {
+        if (!matCtx) return;
+        matCtx.fillStyle = 'rgba(5,5,8,0.06)';
+        matCtx.fillRect(0, 0, mw, mh);
+        matCtx.fillStyle = '#00ff41';
+        matCtx.font = '11px monospace';
+        for (let i = 0; i < mDrops.length; i++) {
+            const c = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEF<>/{}[]|&^%$#@!'[Math.floor(Math.random() * 86)];
+            const x = i * 12;
+            const y = mDrops[i] * 12;
+            matCtx.fillStyle = y > mh * 0.7 ? 'rgba(0,255,65,0.3)' : '#00ff41';
+            matCtx.fillText(c, x, y);
+            if (y > mh && Math.random() > 0.975) mDrops[i] = 0;
+            mDrops[i]++;
+        }
+    }
+    if (matCanvas) {
+        matCtx = matCanvas.getContext('2d');
+        mResize();
+        window.addEventListener('resize', mResize);
+        setInterval(mDraw, 120);
+    }
+
+    // ===== HERO TYPING =====
+    const roles = [
+        'Cyber Security Analyst (VAPT)',
+        'Penetration Tester & Security Auditor',
+        'CVE-2026-25809 Holder',
+        'Bug Bounty Hunter',
+        'CTF Competitor — US Cyber Games'
+    ];
+    let ri = 0, ci = 0, del = false;
+    const he = document.getElementById('hero-type');
+    function hType() {
+        if (!he) return;
+        const cur = roles[ri];
+        he.textContent = cur.substring(0, ci);
+        if (del) {
+            ci--;
+            if (ci < 0) { ci = 0; del = false; ri = (ri + 1) % roles.length; setTimeout(hType, 400); return; }
+            setTimeout(hType, 25);
+        } else {
+            ci++;
+            if (ci > cur.length) { del = true; setTimeout(hType, 2200); return; }
+            setTimeout(hType, 55);
+        }
+    }
+    if (he) hType();
+
+    // ===== TERMINAL TYPEWRITER =====
+    const twLines = [
+        'Scanning ports... 22, 443, 8080 open',
+        'Enumerating services... SSH, HTTPS, API',
+        'Resolved: gdeepsingh665@gmail.com',
+        'TLS handshake complete — ECDHE-RSA-AES256-GCM',
+        'Connection established. Ready to receive.',
+        'Session active. Drop a message anytime.'
+    ];
+    let twi = 0, twc = 0, twTyping = true;
+    const twEl = document.getElementById('tw-output');
+    function twType() {
+        if (!twEl) return;
+        const line = twLines[twi];
+        if (twTyping) {
+            twEl.textContent = line.substring(0, twc++);
+            if (twc > line.length) { twTyping = false; setTimeout(twType, 2500); return; }
+            setTimeout(twType, 20 + Math.random() * 40);
+        } else {
+            twEl.textContent = '';
+            twi = (twi + 1) % twLines.length;
+            twc = 0;
+            twTyping = true;
+            setTimeout(twType, 400);
+        }
+    }
+    setTimeout(twType, 1500);
+
+    // ===== SCROLL REVEAL =====
+    const revealObs = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+    // ===== NAV =====
+    const navSections = document.querySelectorAll('section[id]');
+    const navLs = document.querySelectorAll('.nav-links a');
+    window.addEventListener('scroll', () => {
+        let cur = '';
+        navSections.forEach(s => { if (window.scrollY >= s.offsetTop - 150) cur = s.getAttribute('id'); });
+        navLs.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + cur));
+    });
+
+    document.getElementById('menuToggle').addEventListener('click', () => {
+        document.getElementById('navLinks').classList.toggle('open');
+    });
+    document.querySelectorAll('.nav-links a').forEach(a => {
+        a.addEventListener('click', () => document.getElementById('navLinks').classList.remove('open'));
+    });
+
+    // ===== FOOTER CLOCK =====
+    function updTime() {
+        document.getElementById('footer-time').textContent = new Date().toISOString().replace('T', ' ').split('.')[0];
+    }
+    updTime();
+    setInterval(updTime, 1000);
+    var yearEl = document.getElementById('year'); if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+    // ===== NETWORK TOPOLOGY BACKGROUND =====
+    function initNetwork() {
+        const nCanvas = document.getElementById('network-bg');
+        if (!nCanvas) return;
+        const nCtx = nCanvas.getContext('2d');
+        let nw, nh;
+        function resize() { nw = nCanvas.width = window.innerWidth; nh = nCanvas.height = window.innerHeight; }
+        resize();
+        window.addEventListener('resize', resize);
+
+        const nodes = [];
+        const nodeCount = 30;
+        for (let i = 0; i < nodeCount; i++) {
+            nodes.push({
+                x: Math.random() * nw, y: Math.random() * nh,
+                vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3,
+                r: 2 + Math.random() * 3,
+                color: ['#00ff41', '#00ffff', '#a855f7', '#ffcc00'][Math.floor(Math.random() * 4)]
+            });
+        }
+
+        function draw() {
+            nCtx.clearRect(0, 0, nw, nh);
+            nodes.forEach(n => {
+                n.x += n.vx; n.y += n.vy;
+                if (n.x < 0 || n.x > nw) n.vx *= -1;
+                if (n.y < 0 || n.y > nh) n.vy *= -1;
+            });
+
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const dx = nodes[i].x - nodes[j].x;
+                    const dy = nodes[i].y - nodes[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 150) {
+                        nCtx.beginPath();
+                        nCtx.moveTo(nodes[i].x, nodes[i].y);
+                        nCtx.lineTo(nodes[j].x, nodes[j].y);
+                        nCtx.strokeStyle = `rgba(0,255,65,${0.08 * (1 - dist / 150)})`;
+                        nCtx.lineWidth = 0.5;
+                        nCtx.stroke();
+                    }
+                }
+            }
+
+            nodes.forEach(n => {
+                nCtx.beginPath();
+                nCtx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+                nCtx.fillStyle = n.color;
+                nCtx.fill();
+                const pulse = 0.5 + 0.5 * Math.sin(Date.now() * 0.001 + n.x);
+                nCtx.beginPath();
+                nCtx.arc(n.x, n.y, n.r * 3, 0, Math.PI * 2);
+                nCtx.fillStyle = n.color.replace(')', `,${0.06 * pulse})`).replace('rgb', 'rgba');
+                if (n.color === '#00ff41') nCtx.fillStyle = `rgba(0,255,65,${0.06 * pulse})`;
+                else if (n.color === '#00ffff') nCtx.fillStyle = `rgba(0,255,255,${0.06 * pulse})`;
+                else if (n.color === '#a855f7') nCtx.fillStyle = `rgba(168,85,247,${0.06 * pulse})`;
+                else nCtx.fillStyle = `rgba(255,204,0,${0.06 * pulse})`;
+                nCtx.fill();
+            });
+            requestAnimationFrame(draw);
+        }
+        draw();
+    }
+    initNetwork();
+
+    // ===== CYBERPUNK CITY SKYLINE =====
+    function initCity() {
+        const cCanvas = document.getElementById('city-bg');
+        if (!cCanvas) return;
+        const cCtx = cCanvas.getContext('2d');
+        let cw, ch;
+        function resize() {
+            cw = cCanvas.width = window.innerWidth;
+            ch = cCanvas.height = window.innerHeight * 0.4;
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        const buildings = [];
+        const cols = Math.floor(cw / 2.5);
+        for (let i = 0; i < cols; i++) {
+            const h = 20 + Math.random() * 120;
+            const w = 2 + Math.random() * 3;
+            const hasWin = Math.random() > 0.3;
+            const winCount = Math.floor(Math.random() * 6);
+            buildings.push({ x: i * 2.5, w, h, hasWin, winCount, offset: Math.random() * 100 });
+        }
+
+        function draw() {
+            cCtx.clearRect(0, 0, cw, ch);
+            cCtx.strokeStyle = 'rgba(0,255,65,0.15)';
+            cCtx.lineWidth = 0.5;
+
+            const t = Date.now() * 0.001;
+            buildings.forEach(b => {
+                const bh = b.h + Math.sin(t + b.offset) * 4;
+                const by = ch - bh;
+                cCtx.fillStyle = 'rgba(0,255,65,0.08)';
+                cCtx.fillRect(b.x, by, b.w, bh);
+
+                cCtx.strokeRect(b.x, by, b.w, bh);
+
+                if (b.hasWin) {
+                    for (let wi = 0; wi < b.winCount; wi++) {
+                        const wy = by + 3 + wi * 7;
+                        const lit = Math.sin(t * 0.5 + b.offset + wi) > 0.3;
+                        cCtx.fillStyle = lit ? 'rgba(0,255,65,0.15)' : 'rgba(0,255,65,0.04)';
+                        cCtx.fillRect(b.x + 0.5, wy, b.w - 1, 2.5);
+                    }
+                }
+                cCtx.fillStyle = 'rgba(0,255,65,0.02)';
+                cCtx.fillRect(b.x, ch - 1, b.w, 1);
+            });
+
+            const grad = cCtx.createLinearGradient(0, ch * 0.3, 0, ch);
+            grad.addColorStop(0, 'transparent');
+            grad.addColorStop(1, 'rgba(0,255,65,0.02)');
+            cCtx.fillStyle = grad;
+            cCtx.fillRect(0, ch * 0.3, cw, ch * 0.7);
+
+            requestAnimationFrame(draw);
+        }
+        draw();
+    }
+    initCity();
+
+    // ===== INTERACTIVE TERMINAL =====
+    function termEcho(msg, cls) {
+        const out = document.getElementById('term-output');
+        if (!out) return;
+        const d = document.createElement('div');
+        d.className = 'line ' + (cls || 'dim');
+        d.textContent = msg;
+        out.appendChild(d);
+        out.scrollTop = out.scrollHeight;
+    }
+
+    function termPrompt() {
+        const out = document.getElementById('term-output');
+        if (!out) return;
+        document.getElementById('term-input').value = '';
+        document.getElementById('term-input').focus();
+    }
+
+    var cwd = '/home/gs.dev';
+
+    var fs = {
+        '/': { type: 'dir', children: ['home', 'root', 'etc', 'var', 'opt'] },
+        '/home': { type: 'dir', children: ['gs.dev'] },
+        '/home/gs.dev': { type: 'dir', children: ['about.txt', 'skills.txt', 'certs.txt', 'contact.txt', 'README.md'] },
+        '/home/gs.dev/about.txt': { type: 'file', content: 'Gagandeep Singh — Cyber Security Analyst (VAPT)\nSpecializing in web, network, API, cloud, and mobile penetration testing.' },
+        '/home/gs.dev/skills.txt': { type: 'file', content: 'Web PT | Network PT | API Testing | Cloud/AWS PT\nMobile PT | VA | OWASP Top 10 | CVSS 4.0 | NIST | MITRE ATT&CK' },
+        '/home/gs.dev/certs.txt': { type: 'file', content: 'eJPT · CRTA · MCRTA · CASA · ACP · CCEP · CAPen · CRTOM · ICCA · ISC2-CC' },
+        '/home/gs.dev/contact.txt': { type: 'file', content: 'email: gdeepsingh665@gmail.com | location: New Delhi, India' },
+        '/home/gs.dev/README.md': { type: 'file', content: '# gs.dev — Hacker Portfolio\nBoot sequence · Matrix rain · Interactive shell · CTF challenge\n\nHint: The flag is somewhere on this system. Keep exploring.' },
+        '/root': { type: 'dir', children: ['flag.txt', '.hint', '.bash_history'] },
+        '/root/flag.txt': { type: 'file', content: '\n   ╔══════════════════════════════════════╗\n   ║                                      ║\n   ║     🏴  CTF{gs_d3v_2026_r00t_       ║\n   ║          4cc3ss_gr4nt3d}             ║\n   ║                                      ║\n   ║   Congratulations, hacker!           ║\n   ║   You found the flag.                ║\n   ║                                      ║\n   ╚══════════════════════════════════════╝\n' },
+        '/root/.hint': { type: 'file', content: 'You need elevated privileges to read /root.\nTry: sudo cat /root/flag.txt\nOr: find / -name flag.txt 2>/dev/null' },
+        '/root/.bash_history': { type: 'file', content: 'whoami\nls -la\ncd /root\ncat flag.txt\n# I should hide this better...' },
+        '/etc': { type: 'dir', children: ['passwd', 'shadow', 'hostname'] },
+        '/etc/passwd': { type: 'file', content: 'root:x:0:0:root:/root:/bin/bash\ngs:x:1000:1000:gs.dev:/home/gs.dev:/bin/bash\nwww-data:x:33:33:www-data:/var/www:/usr/sbin/nologin' },
+        '/etc/shadow': { type: 'file', content: 'root:!$6$portfolio$hyperion.encrypted.artifact:19865:0:99999:7:::\ngs:$6$s3cur3d$hash.redacted:19865:0:99999:7:::' },
+        '/etc/hostname': { type: 'file', content: 'gs-dev-box' },
+        '/var': { type: 'dir', children: ['log'] },
+        '/var/log': { type: 'dir', children: ['access.log', 'auth.log'] },
+        '/var/log/access.log': { type: 'file', content: '2026-06-12 10:00:01 — CONNECTION from 127.0.0.1\n2026-06-12 10:00:05 — /root/ accessed by uid=1000 [UNAUTHORIZED]\n2026-06-12 10:00:10 — suspicious file read detected' },
+        '/var/log/auth.log': { type: 'file', content: 'Jun 12 10:00:01 gs-dev sshd[1234]: Failed password for root from 10.0.0.1 port 22\nJun 12 10:00:05 gs-dev sudo: gs : TTY=pts/0 ; PWD=/home/gs.dev ; USER=root ; COMMAND=/bin/cat /root/flag.txt' },
+        '/opt': { type: 'dir', children: ['tools'] },
+        '/opt/tools': { type: 'dir', children: ['scanner.sh', 'exploit.py'] },
+        '/opt/tools/scanner.sh': { type: 'file', content: '#!/bin/bash\n# Port scanner — usage: ./scanner.sh <target>\necho "Scanning $1..."\nnmap -sV $1' },
+        '/opt/tools/exploit.py': { type: 'file', content: '#!/usr/bin/env python3\n# Custom exploit framework\nprint("[*] Loading exploit modules...")\nprint("[!] No modules loaded. This is a portfolio.)' },
+    };
+
+    function resolvePath(path) {
+        if (!path || path === '.') return cwd;
+        if (path === '~' || path === '') return '/home/gs.dev';
+        if (path.startsWith('/')) return normalizePath(path);
+        return normalizePath(cwd + '/' + path);
+    }
+
+    function normalizePath(p) {
+        const parts = p.replace(/\/+/g, '/').split('/').filter(Boolean);
+        const result = [];
+        for (const part of parts) {
+            if (part === '..') { if (result.length) result.pop(); }
+            else if (part !== '.') result.push(part);
+        }
+        return '/' + result.join('/');
+    }
+
+    function listDir(dirPath) {
+        const entry = fs[dirPath];
+        if (!entry || entry.type !== 'dir') return null;
+        return entry.children;
+    }
+
+    function readFile(filePath) {
+        const entry = fs[filePath];
+        if (!entry || entry.type !== 'file') return null;
+        return entry.content;
+    }
+
+    function processCmd(cmd) {
+        const tr = cmd.trim().toLowerCase();
+        const parts = tr.split(/\s+/);
+
+        if (tr === 'clear' || tr === 'cls') {
+            document.getElementById('term-output').innerHTML = '';
+            return;
+        }
+
+        const easterEggs = {
+            'root': [
+                { text: 'ACCESS GRANTED. Welcome, root.', cls: 'green' },
+                { text: '', cls: 'dim' },
+                { text: '  ⠀⠀⠀⠀⠀⣀⣤⣴⣶⣶⣤⣀⠀⠀⠀⠀⠀⠀', cls: 'green' },
+                { text: '  ⠀⠀⢀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣦⡀⠀⠀⠀', cls: 'green' },
+                { text: '  ⠀⣰⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣆⠀⠀', cls: 'green' },
+                { text: '  ⢰⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡄⠀', cls: 'green' },
+                { text: '  ⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⠀', cls: 'green' },
+                { text: '  ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀', cls: 'green' },
+                { text: '  ⢹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡏⠀', cls: 'green' },
+                { text: '  ⠀⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⠀⠀', cls: 'green' },
+                { text: '  ⠀⠀⠙⢿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋⠀⠀⠀', cls: 'green' },
+                { text: '  ⠀⠀⠀⠀⠈⠙⠛⠛⠛⠛⠋⠁⠀⠀⠀⠀⠀', cls: 'green' },
+                { text: '  [ ACCESS TOKEN: gs-root-2026-hyperion ]', cls: 'cyan' },
+                { text: '', cls: 'dim' },
+                { text: '  Type "cd /root" and "cat flag.txt" to capture the flag!', cls: 'yellow' },
+            ],
+            'sudo': [
+                { text: '[sudo] password for gs.dev:', cls: 'dim' },
+                { text: '*** (keyboard interrupt, obviously)', cls: 'dim' },
+                { text: 'Nice try. Only root can sudo here.', cls: 'yellow' },
+                { text: 'Hint: try "sudo cat /root/flag.txt"', cls: 'cyan' },
+            ],
+            'su': [
+                { text: 'su: Authentication failure', cls: 'red' },
+                { text: '(Try "root" — I dare you)', cls: 'dim' },
+            ],
+            '42': [
+                { text: 'The answer to the ultimate question of life, the universe, and everything.', cls: 'green' },
+                { text: '(But what was the question?)', cls: 'dim' },
+            ],
+            'hack': [
+                { text: 'HACKING...', cls: 'red' },
+                { text: '███████░░░ 67% complete', cls: 'yellow' },
+                { text: 'Just kidding. This is a portfolio, not a script kiddie playground.', cls: 'green' },
+                { text: 'But you passed the easter egg check. Well played.', cls: 'cyan' },
+            ],
+            'matrix': [
+                { text: 'Wake up, Neo...', cls: 'green' },
+                { text: 'The Matrix has you...', cls: 'green' },
+                { text: 'Follow the white rabbit.', cls: 'green' },
+                { text: '🕶️', cls: 'dim' },
+            ],
+            'fortune': [
+                { text: 'The best way to predict the future is to exploit it.', cls: 'green' },
+                { text: '— /dev/null/security/humour', cls: 'dim' },
+            ],
+        };
+
+        const easter = easterEggs[tr];
+        if (easter) {
+            if (typeof easter === 'function') { easter(); return; }
+            if (Array.isArray(easter)) {
+                easter.forEach(l => termEcho(l.text, l.cls || 'dim'));
+                return;
+            }
+        }
+
+        const termData = {
+            whoami: { cls: 'green', text: 'Gagandeep Singh // Cyber Security Analyst (VAPT)' },
+            help: { cls: 'dim', text: 'Commands: whoami, skills, certs, contact, clear, date, uptime, neofetch, echo, sudo, ls, cd, cat, pwd, find, ll' },
+            skills: { cls: 'cyan', text: 'Web PT | Network PT | API Testing | Cloud/AWS PT | Mobile PT | VA | OWASP | CVSS 4.0 | NIST | MITRE ATT&CK' },
+            certs: { cls: 'yellow', text: 'eJPT · CRTA · MCRTA · CASA · ACP · CCEP · CAPen · CRTOM · ICCA · ISC2-CC' },
+            contact: { cls: 'green', text: 'email: gdeepsingh665@gmail.com | location: New Delhi, India' },
+            date: { cls: 'green', text: () => new Date().toISOString().replace('T', ' ').split('.')[0] + ' UTC' },
+            uptime: { cls: 'cyan', text: 'operator active since Jan 2025 — 17 months continuous operation' },
+            neofetch: { cls: 'dim', text: 'gs.dev | Kernel: Cyber_Sec_OS 6.8 | Uptime: 17 months | Shell: /bin/hacker | DE: Terminal/i3 | CPU: Intel i7-13700H | GPU: NVIDIA RTX 4060 | MEM: 16384/32768MB' },
+        };
+
+        if (parts[0] === 'sudo') {
+            const sudoCmd = parts.slice(1).join(' ');
+            if (parts[1] === 'rm' || (parts[1] === 'rm' && parts[2] === '-rf')) {
+                termEcho('⚠️  Nice try. System integrity protected.', 'red');
+                return;
+            }
+            if (sudoCmd === 'cat /root/flag.txt' || sudoCmd === 'cat flag.txt' || tr === 'sudo cat /root/flag.txt') {
+                const flag = readFile('/root/flag.txt');
+                if (flag) termEcho(flag, 'green');
+                termEcho('[!] Privilege escalation detected. Flag captured.', 'cyan');
+                return;
+            }
+            termEcho(`sudo: ${sudoCmd}: command not permitted. Nice try.`, 'yellow');
+            return;
+        }
+
+        if (parts[0] === 'cd') {
+            const target = parts[1] || '/home/gs.dev';
+            const resolved = resolvePath(target);
+            const entry = fs[resolved];
+            if (!entry) { termEcho(`cd: ${target}: No such file or directory`, 'red'); return; }
+            if (entry.type !== 'dir') { termEcho(`cd: ${target}: Not a directory`, 'red'); return; }
+            cwd = resolved;
+            document.querySelector('#term-panel .prompt').textContent = `gs.dev@gs.dev:${cwd === '/home/gs.dev' ? '~' : cwd}$`;
+            return;
+        }
+
+        if (parts[0] === 'cat') {
+            if (!parts[1]) { termEcho('cat: missing operand', 'red'); return; }
+            const path = parts[1].startsWith('/') ? parts[1] : cwd + '/' + parts[1];
+            const resolved = resolvePath(parts[1]);
+            const content = readFile(resolved);
+            if (content === null) { termEcho(`cat: ${parts[1]}: No such file or directory`, 'red'); return; }
+            termEcho(content, 'green');
+            if (resolved === '/root/flag.txt') {
+                termEcho('[!] FLAG CAPTURED — CTF{gs_d3v_2026_r00t_4cc3ss_gr4nt3d}', 'cyan');
+            }
+            return;
+        }
+
+        if (parts[0] === 'find') {
+            if (tr === 'find / -name flag.txt' || tr === 'find / -name flag.txt 2>/dev/null') {
+                termEcho('/root/flag.txt', 'green');
+                return;
+            }
+            if (tr.startsWith('find') && tr.includes('flag')) {
+                termEcho('/root/flag.txt', 'green');
+                return;
+            }
+            termEcho('Usage: find / -name flag.txt 2>/dev/null', 'dim');
+            return;
+        }
+
+        if (parts[0] === 'ls') {
+            const target = parts[1] || cwd;
+            const resolved = target.startsWith('/') ? normalizePath(target) : resolvePath(target);
+            const children = listDir(resolved);
+            if (children === null) { termEcho(`ls: ${target}: No such file or directory`, 'red'); return; }
+            const showHidden = parts.includes('-la') || parts.includes('-a') || parts.includes('-l');
+            const items = children.filter(c => showHidden || !c.startsWith('.'));
+            if (items.length === 0) { termEcho('(empty)', 'dim'); return; }
+            if (parts.includes('-la') || parts.includes('-l')) {
+                items.forEach(c => {
+                    const isDir = fs[resolved + '/' + c] && fs[resolved + '/' + c].type === 'dir';
+                    const perms = isDir ? 'drwxr-xr-x' : '-rw-r--r--';
+                    const size = isDir ? 4096 : Math.floor(Math.random() * 8000) + 100;
+                    termEcho(`${perms}  1 gs gs  ${size}  Jan 01 00:00  ${c}${isDir ? '/' : ''}`, isDir ? 'cyan' : 'dim');
+                });
+            } else {
+                termEcho(items.join('    '), 'dim');
+            }
+            return;
+        }
+
+        if (parts[0] === 'll') {
+            const target = parts[1] || cwd;
+            const resolved = target.startsWith('/') ? normalizePath(target) : resolvePath(target);
+            const children = listDir(resolved);
+            if (children === null) { termEcho(`ll: ${target}: No such file or directory`, 'red'); return; }
+            children.forEach(c => {
+                const absPath = resolved + '/' + c;
+                const isDir = fs[absPath] && fs[absPath].type === 'dir';
+                const perms = isDir ? 'drwxr-xr-x' : '-rw-r--r--';
+                const size = isDir ? 4096 : Math.floor(Math.random() * 8000) + 100;
+                termEcho(`${perms}  1 gs gs  ${size}  Jan 01 00:00  ${c}${isDir ? '/' : ''}`, isDir ? 'cyan' : 'dim');
+            });
+            return;
+        }
+
+        if (parts[0] === 'pwd') {
+            termEcho(cwd, 'green');
+            return;
+        }
+
+        if (tr.startsWith('echo ')) {
+            termEcho(cmd.substring(5), 'green');
+            return;
+        }
+
+        const c = termData[parts[0]];
+        if (c) {
+            const msg = typeof c.text === 'function' ? c.text() : c.text;
+            termEcho(msg, c.cls);
+        } else if (tr) {
+            termEcho(`bash: ${parts[0]}: command not found. Try 'help'`, 'red');
+        }
+    }
+
+    function termHandleKey(e) {
+        if (e.key === 'Enter') {
+            const input = document.getElementById('term-input');
+            const cmd = input.value;
+            termEcho('$ ' + cmd, 'green');
+            try { processCmd(cmd); } catch(ex) { termEcho('error: ' + ex.message, 'red'); }
+            input.value = '';
+        }
+        return true;
+    }
+
+    // ===== MOUSE CURSOR GLOW =====
+    const cGlow = document.getElementById('cursor-glow');
+    document.addEventListener('mousemove', function(e) {
+        cGlow.style.left = e.clientX + 'px';
+        cGlow.style.top = e.clientY + 'px';
+        if (cGlow.style.opacity === '0') cGlow.style.opacity = '1';
+    });
+    document.addEventListener('mouseleave', function() { cGlow.style.opacity = '0'; });
+    document.addEventListener('touchstart', function() { cGlow.style.opacity = '0'; }, { passive: true });
+
+    // ===== TERMINAL GLOBALS =====
+    var termFirstOpen = true;
+    function toggleTerminal() {
+        const panel = document.getElementById('term-panel');
+        const btn = document.getElementById('term-toggle-btn');
+        panel.classList.toggle('open');
+        if (panel.classList.contains('open')) {
+            btn.textContent = '[_] close shell';
+            if (termFirstOpen) {
+                termFirstOpen = false;
+                setTimeout(function() {
+                    termEcho('Find Flag 🚩, You Hacker !!!', 'green');
+                    document.getElementById('term-input').focus();
+                }, 200);
+            } else {
+                setTimeout(function() { document.getElementById('term-input').focus(); }, 100);
+            }
+        } else {
+            btn.textContent = '[/] open shell';
+        }
+    }
+    function closeTerminal() {
+        document.getElementById('term-panel').classList.remove('open');
+        document.getElementById('term-toggle-btn').textContent = '[/] open shell';
+    }
+
+    // ===== KONAMI CODE EASTER EGG =====
+    const konami = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+    let konamiIdx = 0;
+    document.addEventListener('keydown', function(e) {
+        const key = e.key;
+        if (key === konami[konamiIdx]) {
+            konamiIdx++;
+            if (konamiIdx === konami.length) {
+                konamiIdx = 0;
+                termEcho('[EASTER EGG] KONAMI CODE ACTIVATED', 'cyan');
+                termEcho('System override engaged. All security protocols bypassed.', 'green');
+                termEcho('gs.dev hypervisor control panel: [ OPEN ]', 'cyan');
+                document.body.style.filter = 'hue-rotate(180deg)';
+                setTimeout(() => { document.body.style.filter = ''; }, 3000);
+            }
+        } else {
+            if (key === 'ArrowUp' || key === 'ArrowDown' || key === 'ArrowLeft' || key === 'ArrowRight' || key === 'b' || key === 'a') {
+                konamiIdx = key === 'ArrowUp' ? 1 : 0;
+            } else {
+                konamiIdx = 0;
+            }
+        }
+    });
+
+</script>
+</body>
+</html>
