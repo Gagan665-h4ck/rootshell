@@ -38,7 +38,7 @@ One-page dark hacker-themed site with interactive terminal, Matrix rain, network
 
 ### Easter Eggs
 
-`root` · `42` · `hack` · `matrix` · `fortune` · `su` · Konami code (↑↑↓↓←→←→ba)
+FIND FLAG 🚩, YOU HACKER !!!!
 
 ## Stack
 
